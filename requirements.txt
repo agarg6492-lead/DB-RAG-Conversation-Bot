@@ -1,0 +1,97 @@
+# Core environment
+fastapi==0.110.0          # Web framework to expose your RAG API
+uvicorn==0.29.0           # ASGI server to run FastAPI
+
+# Database connectivity
+pyodbc==5.1.0             # Connect Python to SQL Server
+sqlalchemy==2.0.30        # ORM/DB abstraction (optional, but useful)
+
+# Embeddings + Retrieval
+sentence-transformers==2.7.0   # Embedding models (MiniLM, etc.)
+faiss-cpu==1.8.0                # Vector search engine for retrieval
+numpy==1.26.4                   # Needed for FAISS and embeddings
+
+# Hugging Face integration
+transformers==4.41.2       # Load Hugging Face models locally
+huggingface-hub==0.23.0    # Authenticate and call Hugging Face API
+datasets==2.19.0           # Handle text datasets if needed
+
+# Bot Framework SDK
+botbuilder-core==4.14.3    # Core SDK for Teams bot
+botbuilder-schema==4.14.3  # Schema definitions for Teams activities
+aiohttp==3.9.5             # Async HTTP client (used in bot.py)
+
+# Utilities
+pydantic==2.7.1            # Data validation for FastAPI request models
+
+
+🛠️ Why Each Library
+FastAPI + Uvicorn → lightweight API server for your RAG pipeline.
+
+pyodbc + SQLAlchemy → connect to your SQL Server DB and query FAQ data.
+
+Sentence-Transformers + FAISS → embed text and perform similarity search.
+
+Transformers + Huggingface-hub → load/generate answers with Hugging Face models.
+
+Botbuilder SDK + aiohttp → integrate your backend with Microsoft Teams.
+
+Pydantic → ensures clean request/response validation.
+
+🔄 Alternatives You Could Have Used
+Vector DB: ChromaDB or Pinecone instead of FAISS.
+
+Framework: Flask instead of FastAPI (slower, less async-friendly).
+
+Bot integration: Power Virtual Agents (low-code, but less flexible).
+
+LLM provider: OpenAI or Azure OpenAI instead of Hugging Face.
+
+
+
+TEAMS Software integration
+
+Here’s the roadmap you should follow:
+
+🔧 Step 1: Wrap Your FastAPI App as a Teams Bot
+Microsoft Teams doesn’t talk directly to FastAPI — it talks to a Bot Framework bot.
+
+You’ll need to register a bot in Azure Bot Service (via Azure Portal).
+
+That bot will forward messages from Teams to your FastAPI app.
+
+🔧 Step 2: Connect FastAPI to Bot Framework
+Use the Bot Framework SDK for Python (or a simple REST bridge).
+
+Your FastAPI app exposes /ask endpoint (already built).
+
+The bot receives a Teams message → calls your FastAPI /ask → returns the answer back to Teams.
+
+🔧 Step 3: Authentication & Deployment
+Deploy your FastAPI app (Azure App Service, Azure Container Apps, or any cloud hosting).
+
+Configure the bot’s Messaging Endpoint in Azure to point to your FastAPI app URL (e.g., https://yourapp.azurewebsites.net/api/messages).
+
+Add Teams as a channel in Azure Bot Service.
+
+🔧 Step 4: SQL → Retriever → Generator Flow
+Your retriever already queries SQL DB and builds embeddings.
+
+When Teams user types: “Give Department Names of Development Groups”:
+
+Teams → Bot → FastAPI /ask
+
+FastAPI → Retriever queries SQL DB, gets embeddings
+
+Generator produces answer
+
+Bot sends answer back to Teams chat
+
+🔧 Step 5: Testing in Teams
+Install your bot into Teams (via App Studio or Teams Developer Portal).
+
+You’ll see your bot as a chat participant.
+
+Type queries → bot responds using your FastAPI app.
+
+uvicorn app:app --reload --port 8000
